@@ -1,8 +1,8 @@
+#include <pch/pch.hpp>
 #include "../primitive_buffer.hpp"
 #include <core/features/features.hpp>
 #include <core/settings.hpp>
 #include <core/systems/systems.hpp>
-#include <pch/pch.hpp>
 #include <protection/game_addresses.hpp>
 #include <utilities/addresses/addresses.hpp>
 #include <utilities/logging/logging.hpp>
