@@ -1,0 +1,10 @@
+build/
+.xmake/
+.xmake-cache/
+dist/
+compile_commands.json
+.cache/
+.vs/
+.vscode/
+.idea/
+.DS_Store

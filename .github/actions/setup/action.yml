@@ -1,0 +1,25 @@
+name: Setup xmake
+description: Install xmake (cached) and restore the xmake build cache for incremental compiles.
+
+inputs:
+  mode:
+    description: xmake build mode (debug | release)
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - uses: xmake-io/github-action-setup-xmake@v1
+      with:
+        xmake-version: latest
+        actions-cache-folder: .xmake-cache
+        actions-cache-key: ${{ runner.os }}-${{ runner.arch }}
+
+    # Content-hashed object cache (xmake build.ccache). A new key is saved on every source
+    # change; restore-keys pick up the latest older cache, so only changed TUs recompile.
+    - uses: actions/cache@v4
+      with:
+        path: build/.build_cache
+        key: xmake-build-${{ runner.os }}-${{ inputs.mode }}-${{ hashFiles('xmake.lua', 'project/**') }}
+        restore-keys: |
+          xmake-build-${{ runner.os }}-${{ inputs.mode }}-

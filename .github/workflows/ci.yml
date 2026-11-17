@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: windows-msvc (${{ matrix.mode }})
+    runs-on: windows-2025-vs2026
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [debug, release]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup
+        with:
+          mode: ${{ matrix.mode }}
+
+      - id: build
+        uses: ./.github/actions/build
+        with:
+          mode: ${{ matrix.mode }}
+          name: velocity-${{ matrix.mode }}-${{ github.sha }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: velocity-${{ matrix.mode }}
+          path: ${{ steps.build.outputs.archive }}
