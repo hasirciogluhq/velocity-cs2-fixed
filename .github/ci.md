@@ -7,7 +7,7 @@ Builds run on GitHub-hosted `windows-2025-vs2026` (Visual Studio 2026, MSVC v145
 | Workflow | Trigger | What it does |
 |---|---|---|
 | `workflows/ci.yml` | push / PR to `main`, manual | Builds `debug` and `release`, uploads each zip as a run artifact |
-| `workflows/release.yml` | push of a `v*` tag | Checks the tag is on `main`, builds `release`, creates a GitHub Release with the zip |
+| `workflows/release.yml` | push of a `v*` tag | Checks the tag is on `main`, builds `release`, creates a GitHub Release with the zip (tags with `-`, e.g. `v1.0.0-rc.1`, become pre-releases) |
 
 `main` is the only branch. To release:
 
