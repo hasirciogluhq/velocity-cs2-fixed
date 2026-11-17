@@ -1,0 +1,20 @@
+---
+import Base from './Base.astro';
+
+const { frontmatter } = Astro.props;
+---
+<Base title={frontmatter.title} description={frontmatter.description}>
+  <article class="doc container">
+    <header class="doc__head">
+      <h1>{frontmatter.title}</h1>
+      <p class="lead">{frontmatter.description}</p>
+    </header>
+    <div class="prose">
+      <slot />
+    </div>
+  </article>
+</Base>
+
+<style>
+  h1 { overflow-wrap: break-word; min-width: 0; text-wrap: balance; }
+</style>

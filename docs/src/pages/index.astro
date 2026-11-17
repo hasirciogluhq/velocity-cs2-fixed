@@ -1,0 +1,116 @@
+---
+import Base from '../layouts/Base.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const releases = 'https://github.com/hasirciogluhq/velocity-cs2-fixed/releases';
+
+const tabs = ['Ragebot', 'Legitbot', 'Players', 'World', 'Skins', 'Misc', 'Config'];
+const movement = [
+  { label: 'Bunny hop', on: true },
+  { label: 'Air strafe', on: true },
+  { label: 'Jump bug', on: true },
+  { label: 'Fast ladder', on: true },
+  { label: 'Edge jump', on: false, key: 'E' },
+  { label: 'Edge stop', on: false, key: 'N' },
+];
+
+const areas = [
+  { href: 'combat/', title: 'Combat', line: 'Legitbot and ragebot, each tuned per weapon group.' },
+  { href: 'visuals/', title: 'Visuals', line: 'Boxes, skeletons, chams, glow, grenades and hit effects.' },
+  { href: 'skins/', title: 'Skins', line: 'Any finish on guns, knives and gloves, and any agent.' },
+  { href: 'world/', title: 'World', line: 'Weather, sky, light and post-processing on any map.' },
+  { href: 'movement/', title: 'Movement', line: 'Bunny hop, air strafe, jump bug and edge tricks on a key.' },
+  { href: 'menu/', title: 'The menu', line: 'Seven tabs, search, keybinds and saved configs.' },
+];
+
+const weather = [
+  { dt: 'Snow, rain or stars', dd: 'Falling over the whole map, in a colour you pick.' },
+  { dt: 'Fog and wind', dd: 'Density, draw distance, strength and direction.' },
+  { dt: 'Sky and light', dd: 'Another skybox, a tinted sun, warmer or colder light.' },
+  { dt: 'Post-processing', dd: 'Bloom, gamma, depth of field, chromatic aberration.' },
+];
+---
+<Base title="velocity" description="velocity is a Counter-Strike 2 client mod for offline play: combat, visuals, skins, world and movement in one menu.">
+  <section class="hero">
+    <div class="container hero__grid">
+      <div class="hero__text">
+        <h1>All of CS2, one quiet menu.</h1>
+        <p class="lead">Combat, visuals, skins, weather and movement for offline play.</p>
+        <div class="actions">
+          <a class="btn" href={releases}>Download a release</a>
+          <a class="btn btn--quiet" href={`${base}combat/`}>See the features</a>
+        </div>
+      </div>
+
+      <figure class="menu" data-slot="menu" data-kind="product" data-alt="A screenshot of the in-game menu on the Misc tab, movement section">
+        <div class="menu__window" role="img" aria-label="The velocity menu, Misc tab, movement section with its default settings">
+          <ul class="menu__tabs" aria-hidden="true">
+            {tabs.map((t) => <li class={t === 'Misc' ? 'is-on' : undefined}>{t}</li>)}
+          </ul>
+          <div class="menu__body" aria-hidden="true">
+            <p class="menu__search">Search options</p>
+            <div class="menu__panel">
+              <p class="menu__panel-title">Movement</p>
+              <ul class="menu__rows">
+                {movement.map((m) => (
+                  <li>
+                    <span class={`check${m.on ? ' is-on' : ''}`}></span>
+                    <span class="menu__label">{m.label}</span>
+                    {m.key && <span class="menu__key">hold {m.key}</span>}
+                  </li>
+                ))}
+              </ul>
+              <div class="menu__slider">
+                <span class="menu__label">Slow walk speed</span>
+                <span class="menu__value num">33</span>
+                <span class="track"><span class="track__fill"></span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <figcaption>The Misc tab with its default movement settings.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="pages">
+    <div class="container">
+      <h2>Six things it does</h2>
+      <ol class="rows">
+        {areas.map((p) => (
+          <li>
+            <a class="rows__item" href={`${base}${p.href}`}>
+              <span class="rows__title">{p.title}</span>
+              <span class="rows__line">{p.line}</span>
+            </a>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="world">
+    <div class="container world__grid">
+      <div class="world__head">
+        <h2>Snow on Mirage, if you like</h2>
+        <p class="lead">The World tab changes how any map looks, only on your screen.</p>
+        <a class="btn btn--quiet" href={`${base}world/`}>See the World tab</a>
+      </div>
+      <dl class="facts">
+        {weather.map((w) => (
+          <div class="facts__row">
+            <dt>{w.dt}</dt>
+            <dd>{w.dd}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
+
+  <section class="band">
+    <div class="container band__inner">
+      <p class="statement">Offline, against bots. Never on official servers.</p>
+      <a class="btn btn--quiet" href={`${base}disclaimer/`}>Read the disclaimer</a>
+    </div>
+  </section>
+</Base>
