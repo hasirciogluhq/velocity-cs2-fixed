@@ -1,0 +1,36 @@
+name: Build and package
+description: Configure, build with MSVC and zip the DLL + PDB into dist/.
+
+inputs:
+  mode:
+    description: xmake build mode (debug | release)
+    required: true
+  name:
+    description: Archive base name (without .zip)
+    required: true
+
+outputs:
+  archive:
+    description: Path to the created zip
+    value: ${{ steps.package.outputs.archive }}
+
+runs:
+  using: composite
+  steps:
+    - name: Configure
+      shell: pwsh
+      run: xmake f -y -p windows -a x64 -m ${{ inputs.mode }} --policies=build.ccache:y
+
+    - name: Build
+      shell: pwsh
+      run: xmake -y -v
+
+    - name: Package
+      id: package
+      shell: pwsh
+      run: |
+        $out = "build/windows/x64/${{ inputs.mode }}"
+        New-Item -ItemType Directory -Force dist | Out-Null
+        $archive = "dist/${{ inputs.name }}.zip"
+        Compress-Archive -Force -Path "$out/*.dll", "$out/*.pdb" -DestinationPath $archive
+        "archive=$archive" >> $env:GITHUB_OUTPUT

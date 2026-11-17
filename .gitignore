@@ -1,7 +1,7 @@
-build/
+/build/
 .xmake/
 .xmake-cache/
-dist/
+/dist/
 compile_commands.json
 .cache/
 .vs/
