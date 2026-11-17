@@ -6,17 +6,15 @@
 
 /*
 * @info
-* All addresses have meta data like
-* All patterns live in protection/patterns.hpp — update signatures there 1:1.
-* PATTERN ( patterns::name )
-* MODULE ( "MODULE" )
+* PATTERN ( patterns::name )              -> signature names: protection/patterns.hpp
+*                                            signature bytes: protection/patterns/<group>.cpp
+* MODULE_BASE ( "MODULE" )
+* MODULE_EXPORT ( "MODULE:EXPORT" )
 * INTERFACE_ ( "MODULE:INTERFACE_NAME" )
 * CONVAR ( "CONVAR_NAME" )
 *
-* We dont need to store decrypted address, we need to use it in code
-*
-*
-* for example:
+* Patterns are resolved once and cached inside patterns::name (), so call it
+* where you need the address instead of copying it into your own globals.
 *
 * bad:
 * detail::address_1 = PATTERN (patterns::name); then in another function call detail::address_1
@@ -33,74 +31,10 @@ namespace protection::addresses {
 	consteval std::uint32_t hash (const char (&str) [N]) {
 		return hash_const (str);
 	}
-
-	template <std::size_t N>
-	struct fixed_string {
-		char value [N] {};
-
-		constexpr fixed_string (const char (&str) [N]) {
-			for (std::size_t i = 0; i < N; ++i)
-				value [i] = str [i];
-		}
-
-		constexpr operator const char* () const {
-			return value;
-		}
-	};
-
-	template <std::size_t N>
-	fixed_string (const char (&) [N]) -> fixed_string<N>;
-
-	enum class address_type : std::uint32_t {
-		pattern,
-		interface_,
-		convar,
-		module_base,
-		module_export
-	};
-
-	struct address_data_t {
-		address_type type;
-		const char* data;
-	};
-
-	union address_t {
-		address_data_t data;
-		struct {
-			volatile std::uintptr_t encoded;
-			volatile std::uint64_t  key;
-		};
-
-		constexpr address_t (std::uintptr_t addr = 0) : encoded (addr), key (0) {}
-		constexpr address_t (address_type type, const char* str) : data {type, str} {}
-	};
-
-	__forceinline std::uintptr_t decode (const address_t& e) noexcept {
-		return static_cast<std::uintptr_t>(e.encoded ^ e.key);
-	}
-
-	template <std::uint32_t Hash, address_type Type, fixed_string Str>
-	struct address_holder {
-		[[gnu::section("_addr"), gnu::used, gnu::retain]]
-		inline static constexpr address_t entry {Type, Str.value};
-	};
-
-	struct sentinel_holder {
-		[[gnu::section("_addr"), gnu::used, gnu::retain]]
-		inline static constexpr address_t entry {};
-	};
-
 }
 
-#define ADDRESS_IMPL(hash_value, addr_type, str_value) \
-    (::protection::addresses ::address_holder<hash_value, addr_type, ::protection::addresses ::fixed_string{ str_value }>::entry)
-
 #ifndef PATTERN
-#define PATTERN(entry) \
-    ([]() -> std::uintptr_t { \
-        static const auto val = memory::resolve_pattern((entry).data.data); \
-        return val; \
-    }())
+#define PATTERN(entry) ((entry) ())
 #endif
 
 #ifndef INTERFACE_

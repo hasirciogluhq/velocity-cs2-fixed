@@ -16,6 +16,7 @@
 #include <core/rendering/rendering.hpp>
 
 #include <utilities/diag.hpp>
+#include <protection/patterns.hpp>
 
 namespace {
 
@@ -413,6 +414,12 @@ namespace {
 			{
 				INIT_FAIL( "failed to initialize function addresses." );
 			}
+
+#if defined( DEV )
+			// Scan every signature once so a game update shows all broken ones in one log.
+			diag::step( "stage: signatures" );
+			patterns::verify( );
+#endif
 		}
 
 		diag::step( "stage: systems" );
