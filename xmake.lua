@@ -18,7 +18,7 @@ target("velocity")
     add_includedirs("project", "project/external/phnt", "project/external/xdraw/dependencies/freetype")
     add_defines("VELOCITYCS2_EXPORTS", "_WINDOWS", "_USRDLL", "UNICODE", "_UNICODE")
     add_vectorexts("avx2")
-    add_syslinks("synchronization", "d3d11", "dxgi", "version")
+    add_syslinks("user32", "advapi32", "ole32", "shell32", "synchronization", "d3d11", "dxgi", "version")
 
     if is_mode("debug") then
         set_basename("velocity-debug")
@@ -34,9 +34,9 @@ target("velocity")
         add_files("project/external/inline-syscall/syscall_impl.asm")
         set_runtimes("MT")
         add_cxflags("/GS-", "/Gy")
-        add_shflags("/ENTRY:entry", "/SUBSYSTEM:WINDOWS")
+        add_shflags("/ENTRY:entry", "/SUBSYSTEM:WINDOWS", {force = true})
         if is_mode("release") then
-            add_shflags("/OPT:REF", "/OPT:ICF")
+            add_shflags("/OPT:REF", "/OPT:ICF", {force = true})
         end
     elseif is_plat("mingw") then
         add_shflags("-Wl,--entry=entry", "-static", {force = true})
