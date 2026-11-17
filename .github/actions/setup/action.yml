@@ -17,7 +17,7 @@ runs:
 
     # Content-hashed object cache (xmake build.ccache). A new key is saved on every source
     # change; restore-keys pick up the latest older cache, so only changed TUs recompile.
-    - uses: actions/cache@v4
+    - uses: actions/cache@v6
       with:
         path: build/.build_cache
         key: xmake-build-${{ runner.os }}-${{ inputs.mode }}-${{ hashFiles('xmake.lua', 'project/**') }}
