@@ -16,7 +16,7 @@ namespace patterns {
 	SIGNATURE (game_event_get_string,       "client.dll:>E8????????85DB0F9FC3");
 	SIGNATURE (parse_report_hit,            "client.dll:48895C24184889742420574883EC20488D058AE04A01");
 	SIGNATURE (hud,                         "client.dll:488B05*????????4885C07471");
-	SIGNATURE (find_hud_element,            "client.dll:>E8????????4885C0488D751C");
+	SIGNATURE (find_hud_element,            "client.dll:40534883EC20488B05????????488BD94885C074??48895C24");
 	SIGNATURE (hud_death_notice_clear,      "client.dll:85C07509488D4EE0>E8????????488B5C2440");
 	SIGNATURE (hud_weapon_selection_update, "client.dll:498BE35FC3488BCB>E8????????488BCBE8????????");
 	SIGNATURE (set_voice_data,              "client.dll:>E8????????4C39B5C8140000");

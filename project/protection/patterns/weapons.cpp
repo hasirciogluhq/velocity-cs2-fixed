@@ -6,8 +6,8 @@ namespace patterns {
 
 	SIGNATURE (get_inaccuracy,                "client.dll:48895C24??5556574881EC????????440F298424");
 	SIGNATURE (base_fire_guns_get_inaccuracy, "client.dll:>E8????????84C00F84C6FEFFFF");
-	SIGNATURE (get_spread,                    "client.dll:4883EC??486391");
-	SIGNATURE (get_aim_punch,                 "client.dll:140000488D542420>E8????????F30F1015????????");
+	SIGNATURE (get_spread,                    "client.dll:486391????????488B818803000085D278??4883FA0273??F30F10849050070000");
+	SIGNATURE (get_aim_punch,                 "client.dll:48895C2410574883EC40488BFA488BD9488D542450");
 	SIGNATURE (weapon_calculate_spread,       "client.dll:28F3440F11442420>E8????????488D85B0000000");
 	SIGNATURE (weapon_update_accuracy,        "client.dll:405741564883EC68488BF9E8????????4C8BF04885C0");
 	SIGNATURE (weapon_recoil_data,            "client.dll:488D0D*????????488D8424????????41B801000000");

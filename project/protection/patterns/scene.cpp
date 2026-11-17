@@ -4,7 +4,7 @@
 
 namespace patterns {
 
-	SIGNATURE (render_view,                "client.dll:4C8BDC535556574881ECD8000000488D05????????48C7442448????????");
+	SIGNATURE (render_view,                "client.dll:4C8BDC53555741554881EC????????488D05");
 	SIGNATURE (view_matrix,                "client.dll:488D0D*????????48C1E006");
 	SIGNATURE (override_view,              "client.dll:A8000000488D05*????????4C89742420+78~");
 	SIGNATURE (update_fov_sensitivity,     "client.dll:48895C24??48896C24??48897424??574883EC20488BB9????????488BF1");
@@ -27,7 +27,7 @@ namespace patterns {
 	SIGNATURE (kv3_alloc,                  "tier0.dll:40534883EC3080FA060FB6C241B916");
 	SIGNATURE (kv3_destroy,                "tier0.dll:405741574883EC384C8B01448BFA498BC0488BF948C1E802");
 	SIGNATURE (kv3_load,                   "tier0.dll:44242848897C2420>E8????????0FB6D88B4C2444");
-	SIGNATURE (set_shader_param,           "client.dll:>E8????????0FB64325");
+	SIGNATURE (set_shader_param,           "client.dll:4C8D442430BAEB293D2E488BCB0F10000F29442430>E8????????");
 	SIGNATURE (set_shader_param_i,         "client.dll:48896C24??48897424??574883EC20660F6ECA418BF0");
 	SIGNATURE (set_postprocess_vec,        "engine2.dll:>E8????????440F289424");
 	SIGNATURE (setup_fog,                  "client.dll:48895C24??48896C24??48897424??48894C24??5741544155415641574883EC20486302");

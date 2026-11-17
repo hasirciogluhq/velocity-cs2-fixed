@@ -1,7 +1,32 @@
 # need.fixtures
 
 The project last worked about 1–1.5 months ago. This file lists everything that may have broken after CS2 updates since then.
-No current `client.dll` / `engine2.dll` was available, so nothing here is confirmed broken. Risk was ranked by reading the code.
+
+## Status (checked offline against the 2026-11-17 game DLLs)
+
+All 144 signatures were scanned against the current DLLs the same way `memory::resolve_pattern` does.
+
+**Fixed** (new signature, unique match): `add_entity`, `remove_entity`, `render_view`, `render_decals`,
+`render_crosshair`, `draw_legs`, `set_shader_param`, `get_spread`, `get_aim_punch`, `trace_ray`,
+`trace_bullet_update`, `prediction_setup_move`, `prediction_process_movement`, `prediction_finish_move`,
+`find_hud_element`, and `trace_bullet_data_init` (it matched twice; the first match was right, now it matches once).
+
+**Still not found** (need a new signature):
+
+| Group | Signatures |
+| --- | --- |
+| changer | `weapon_update_skin`, `weapon_update_mesh`, `viewmodel_update_mesh` |
+| game | `post_network_data_received`, `parse_report_hit`, `set_voice_data`, `engine_client_cmd`, `filesystem_close` |
+| prediction | `prediction_player`, `simulation_player` |
+| scene | `update_fov_sensitivity`, `get_world_group_id`, `dynamic_light_manager` |
+| trace | `trace_ray_entity`, `trace_bullet_free` |
+| weapons | `weapon_update_accuracy` |
+
+**Checked and unchanged:** the bullet penetration routine (`trace_bullet`) has the same address and the same arguments
+(trace data, damage, penetration, range modifier, pen count, team, records), and the trace data layout (start at 0x1cf8)
+still matches `systems::tracing::trace_data`. `game_trace_manager` resolves to the same global the game's own trace calls load.
+
+The sections below are the original risk review, done by reading the code before the DLLs were available.
 
 ## 0. Run this first: which ones are actually broken?
 
