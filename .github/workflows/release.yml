@@ -1,5 +1,8 @@
 name: Release
 
+# On a v* tag:  ci + docs build (parallel) -> docs deploy (stable tags only) -> GitHub release from CI's artifacts.
+# A tag with a hyphen (v1.0.0-rc.1) skips the docs and becomes a pre-release.
+
 on:
   push:
     tags: ['v*']
@@ -7,53 +10,17 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
-  release:
-    runs-on: windows-2025-vs2026
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
+  ci:
+    uses: ./.github/workflows/ci.yml
 
-      - name: Ensure tag is on main
-        shell: pwsh
-        run: |
-          git merge-base --is-ancestor $env:GITHUB_SHA origin/main
-          if ($LASTEXITCODE -ne 0) { throw "Tag ${{ github.ref_name }} is not on main" }
-
-      - uses: ./.github/actions/setup
-        with:
-          mode: release
-
-      - id: build
-        uses: ./.github/actions/build
-        with:
-          mode: release
-          name: velocity-${{ github.ref_name }}
-
-      - name: Publish release
-        shell: pwsh
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          $tag = "${{ github.ref_name }}"
-          $flags = @()
-          if ($tag -like "*-*") { $flags += "--prerelease" }  # v1.0.0-rc.1 -> pre-release
-          gh release create $tag "${{ steps.build.outputs.archive }}" --verify-tag --generate-notes --title $tag @flags
-
-  # Runs beside the release job on its own runner, for stable tags only (v1.2.0, not v1.2.0-rc.1).
-  docs:
+  docs-build:
     if: ${{ !contains(github.ref_name, '-') }}
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
     defaults:
       run:
         working-directory: docs
@@ -74,5 +41,46 @@ jobs:
         with:
           path: docs/dist
 
+  docs-deploy:
+    needs: [ci, docs-build]
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
       - id: deploy
         uses: actions/deploy-pages@v5
+
+  release:
+    needs: [ci, docs-build, docs-deploy]
+    # Pre-releases skip the docs jobs; everything that did run must have passed.
+    if: >-
+      ${{ !cancelled() && needs.ci.result == 'success' &&
+          (contains(github.ref_name, '-') || (needs.docs-build.result == 'success' && needs.docs-deploy.result == 'success')) }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Ensure tag is on main
+        run: git merge-base --is-ancestor "$GITHUB_SHA" origin/main || { echo "Tag $GITHUB_REF_NAME is not on main"; exit 1; }
+
+      - uses: actions/download-artifact@v8
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ls -l artifacts
+          flags=()
+          [[ "$GITHUB_REF_NAME" == *-* ]] && flags+=(--prerelease)
+          gh release create "$GITHUB_REF_NAME" artifacts/*.zip --verify-tag --generate-notes --title "$GITHUB_REF_NAME" "${flags[@]}"

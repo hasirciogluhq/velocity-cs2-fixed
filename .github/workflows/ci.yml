@@ -8,6 +8,7 @@ on:
     branches: [main]
     paths-ignore: ['docs/**']
   workflow_dispatch:
+  workflow_call:   # release.yml runs this same build before publishing
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -32,7 +33,7 @@ jobs:
         uses: ./.github/actions/build
         with:
           mode: ${{ matrix.mode }}
-          name: velocity-${{ matrix.mode }}-${{ github.sha }}
+          name: velocity-${{ matrix.mode }}-${{ github.ref_type == 'tag' && github.ref_name || github.sha }}
 
       - uses: actions/upload-artifact@v7
         with:
